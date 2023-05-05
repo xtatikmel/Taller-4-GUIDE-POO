@@ -307,18 +307,21 @@ function buscarestud_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % obtener los valores de nombre y apellido de la primera fila de la tabla
 datos= get(handles.uitable1, 'Data');
-nombre_buscar = datos{1,1};
-apellido_buscar = datos{1,2};
+nombre = datos{1,1};
+nombre_buscar = get(handles.buscanombre, 'String');
+apellido = datos{1,2};
+apellido_buscar = get(handles.Buscapellido, 'String');
 % buscar los valores de nombre y apellido en la tabla datos
-idx = ismember(datos(:,1:2),{nombre_buscar, apellido_buscar});
-filas = find(idx);
 
-
+if strcmp(nombre_buscar.Nombre, nombre.Nombre) && strcmp(apellido_buscar.Apellido, apellidos.Apellido)
+    % Si coinciden, agregar los valores de nombre y apellido a una nueva tabla
+    nuevaTabla = table(nombre.Nombre, apellido.Apellido)
+end
+% idx = ismember(datos(:,1:2),{nombre_buscar, apellido_buscar});
+% filas = find(idx);
 % crear una nueva tabla con las dos primeras columnas de la tabla datos
-nueva_tabla = datos(filas,1:2);
+% nueva_tabla = datos(filas,1:2);
 
-% crear una nueva tabla con las dos primeras columnas de la tabla datos
-nueva_tabla = datos(filas,1:2);
 
 % --- Executes on button press in update.
 function update_Callback(hObject, eventdata, handles)
