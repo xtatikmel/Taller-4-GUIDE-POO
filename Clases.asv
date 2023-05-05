@@ -115,41 +115,6 @@ function Notas_Callback(hObject, eventdata, handles)
 
 
 % --- Executes on button press in generarReporte.
-function generarReporte_Callback(hObject, eventdata, handles)
-% hObject    handle to generarReporte (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-    anioActual = str2double(get(handles.anioActual, 'String'));
-    semestre = str2double(get(handles.semestre, 'String'));
-    programaAcademico = get(handles.programaAcademico, 'String');
-    nombreDocente = get(handles.nombreDocente, 'String');
-    nombreAsignatura = get(handles.nombreAsignatura, 'String');
-    codigoAsignatura = get(handles.codigoAsignatura, 'String');
-
-
-% Ingresar notas
-
-
-    % Genera el reporte y guárdalo en el archivo "reporte.txt"
-    fileID = fopen('reporte.txt', 'w');
-    fprintf(fileID, 'Año: %d\nSemestre: %d\n', anioActual, semestre);
-    fprintf(fileID, 'Programa Académico: %s\nDocente: %s\n', programaAcademico, nombreDocente);
-    fprintf(fileID, 'Asignatura: %s\nCódigo: %s\n', nombreAsignatura, codigoAsignatura);
-    
-    % Escribe los datos de cada estudiante en el archivo (aquí puedes reemplazarlo con la información de los objetos de la clase Student)
-    for i = 1:size(notas, 1)
-        fprintf(fileID, '\nEstudiante %d:\n', i);
-        fprintf(fileID, 'Notas: %.1f %.1f %.1f\n', notas(i, :));
-        notaFinal = mean(notas(i, :));
-        fprintf(fileID, 'Nota final: %.1f\n', notaFinal);
-        estado = 'Aprobado';
-        if notaFinal < 3.0
-            estado = 'Reprobado';
-        end
-        fprintf(fileID, 'Estado: %s\n', estado);
-    end
-
 
 
 function ednombre_Callback(hObject, eventdata, handles)
@@ -303,6 +268,8 @@ function buscanombre_CreateFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
+
+
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -338,13 +305,53 @@ function buscarestud_Callback(hObject, eventdata, handles)
 % hObject    handle to buscarestud (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-T = get(handles.uitable1, 'Data');
-idx = ismember(T(:,{'nombre','apellido'}),{'nombre_buscado','apellido_buscado'});
+% obtener los valores de nombre y apellido de la primera fila de la tabla
+datos= get(handles.uitable1, 'Data');
+nombre_buscar = datos{1,1};
+apellido_buscar = datos{1,2};
+% buscar los valores de nombre y apellido en la tabla datos
+idx = ismember(datos(:,1:2),{nombre_buscar, apellido_buscar});
 filas = find(idx);
-% Nueva tabla 
-nueva_tabla = table(T(filas,:))
-% Agregar nueva info
-nueva_tabla = addvars(nueva_tabla, nueva_informacion, 'After', 'apellido')
+
+
+% crear una nueva tabla con las dos primeras columnas de la tabla datos
+nueva_tabla = datos(filas,1:2);
+
+% crear una nueva tabla con las dos primeras columnas de la tabla datos
+nueva_tabla = datos(filas,1:2);
+
+% --- Executes on button press in update.
+function update_Callback(hObject, eventdata, handles)
+% hObject    handle to update (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+ nombre_buscar = get(handles.buscanombre, 'String');
+apellido_buscar = get(handles.Buscapellido, 'String');
+id = str2num(get(handles.editid, 'String'));
+
+% Direccion = get(handles.edDireccion, 'String');
+% Telefono = str2num(get(handles.edTelefono, 'String'));
+% Celular = str2num(get(handles.edCelular, 'String'));
+% Edad = 
+datosE = get(handles.uitable1, 'Data');
+ 
+if isempty(datosE)
+    datosE{1,1} = nombre_buscar;
+    datosE{1,2} = apellido_buscar;
+    datosE{1,3} = id;
+%     datos{1,4} = Direccion;
+%     datos{1,5} = Telefono;
+%     datos{1,6} = Celular;
+else
+    datosE{end+1,1} = nombre_buscar;
+    datosE{end,2} = apellido_buscar;
+    datosE{end,3} = id;
+%     datos{end,4} = Direccion;
+%     datos{end,5} = Telefono;
+%     datos{end,6} = Celular;
+end
+set(handles.uitable2, 'Data', datosE);
 
 function editid_Callback(hObject, eventdata, handles)
 % hObject    handle to editid (see GCBO)
@@ -526,33 +533,41 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in update.
-function update_Callback(hObject, eventdata, handles)
-% hObject    handle to update (see GCBO)
+
+
+
+function generarReporte_Callback(hObject, eventdata, handles)
+% hObject    handle to generarReporte (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-nombre = get(handles.ednombre, 'String');
-apellido = get(handles.edapellido, 'String');
-id = str2num(get(handles.editid, 'String'));
-% Direccion = get(handles.edDireccion, 'String');
-% Telefono = str2num(get(handles.edTelefono, 'String'));
-% Celular = str2num(get(handles.edCelular, 'String'));
-% Edad = 
-datosE = get(handles.uitable1, 'Data');
 
-if isempty(datosE)
-    datosE{1,1} = nombre;
-    datosE{1,2} = apellido;
-    datosE{1,3} = id;
-%     datos{1,4} = Direccion;
-%     datos{1,5} = Telefono;
-%     datos{1,6} = Celular;
-else
-    datosE{end+1,1} = nombre;
-    datosE{end,2} = apellido;
-    datosE{end,3} = id;
-%     datos{end,4} = Direccion;
-%     datos{end,5} = Telefono;
-%     datos{end,6} = Celular;
-end
-set(handles.uitable2, 'Data', datosE);
+    anioActual = str2double(get(handles.anioActual, 'String'));
+    semestre = str2double(get(handles.semestre, 'String'));
+    programaAcademico = get(handles.programaAcademico, 'String');
+    nombreDocente = get(handles.nombreDocente, 'String');
+    nombreAsignatura = get(handles.nombreAsignatura, 'String');
+    codigoAsignatura = get(handles.codigoAsignatura, 'String');
+
+
+% Ingresar notas
+
+
+    % Genera el reporte y guárdalo en el archivo "reporte.txt"
+    fileID = fopen('reporte.txt', 'w');
+    fprintf(fileID, 'Año: %d\nSemestre: %d\n', anioActual, semestre);
+    fprintf(fileID, 'Programa Académico: %s\nDocente: %s\n', programaAcademico, nombreDocente);
+    fprintf(fileID, 'Asignatura: %s\nCódigo: %s\n', nombreAsignatura, codigoAsignatura);
+    
+    % Escribe los datos de cada estudiante en el archivo (aquí puedes reemplazarlo con la información de los objetos de la clase Student)
+    for i = 1:size(notas, 1)
+        fprintf(fileID, '\nEstudiante %d:\n', i);
+        fprintf(fileID, 'Notas: %.1f %.1f %.1f\n', notas(i, :));
+        notaFinal = mean(notas(i, :));
+        fprintf(fileID, 'Nota final: %.1f\n', notaFinal);
+        estado = 'Aprobado';
+        if notaFinal < 3.0
+            estado = 'Reprobado';
+        end
+        fprintf(fileID, 'Estado: %s\n', estado);
+    end
+
